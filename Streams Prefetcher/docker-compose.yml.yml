@@ -1,0 +1,22 @@
+services:
+  stremio-streams-prefetcher:
+    image: ghcr.io/deejay189393/streams-prefetcher:latest
+    container_name: stremio-streams-prefetcher
+    restart: always
+    ports:
+      - 32862:5000
+    volumes:
+      - /home/aerya/docker/stremio/stremio-streams-prefetcher:/app/data
+    environment:
+      TZ: Europe/Paris
+      LOG_LEVEL: DEBUG
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

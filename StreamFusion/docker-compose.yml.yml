@@ -1,0 +1,88 @@
+services:
+  stremio-stream-fusion:
+    image: ghcr.io/telkaoss/stream-fusion:latest
+    container_name: stremio-stream-fusion
+    restart: always
+    environment:
+      SECRET_API_KEY: 32235143f1598e19525f02b955add7e327e4e87ca9819210ac4239693aae6f85 # générer avec openssl rand -hex 32
+      # se rendre ENSUITE sur /api/admin pour générer la clé API à utiliser lors de la configuration
+      TMDB_API_KEY: xxx
+      JACKETT_API_KEY: xxx
+      YGG_PASSKEY: xxx
+      SHAREWOOD_PASSKEY: xxx
+      REDIS_HOST: stremio-stream-fusion-redis
+      PG_HOST: stremio-stream-fusion-postgres
+      PG_USER: stremio
+      PG_PASS: SRWNsafYXtBQJLsunk2gba6cLfTTixgGpMVCu
+      USE_HTTPS: true
+      TZ: Europe/Paris
+      JACKETT_HOST: stremio-stream-fusion-jackett
+      JACKETT_SCHEMA: http
+      JACKETT_PORT: 9117
+      ZILEAN_ENABLED: true
+      ZILEAN_HOST: stremio-stream-fusion-zilean
+      ZILEAN_PORT: 8181
+      ZILEAN_SCHEMA: http
+    ports:
+      - 32854:8080
+    volumes:
+      - /home/aerya/docker/stremio/stremio-stream-fusion:/app/config
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    depends_on:
+      - stremio-stream-fusion-redis
+      - stremio-stream-fusion-zilean
+      - stremio-stream-fusion-postgres
+      - stremio-stream-fusion-jackett
+
+  stremio-stream-fusion-redis:
+    image: redis:latest
+    container_name: stremio-stream-fusion-redis
+    volumes:
+      - /home/aerya/docker/stremio/stremio-stream-fusion-redis:/data
+    command: redis-server --appendonly yes
+    restart: always
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  stremio-stream-fusion-zilean:
+    image: ipromknight/zilean:latest
+    container_name: stremio-stream-fusion-zilean
+    restart: always
+    volumes:
+      - /home/aerya/docker/stremio/stremio-stream-fusion-zilean:/app/data
+    environment:
+      Zilean__Database__ConnectionString: Host=stremio-stream-fusion-postgres;Port=5432;Database=stremio-zilean;Username=stremio;Password=SRWNsafYXtBQJLsunk2gba6cLfTTixgGpMVCu
+      Zilean__Dmm__ImportBatched: "True"
+      Zilean__Dmm__MaxFilteredResults: "200"
+      Zilean__Dmm__MinimumScoreMatch: "0.85"
+      Zilean__Imdb__EnableEndpoint: "False"
+      Zilean__Imdb__EnableImportMatching: "False"
+    depends_on:
+      - stremio-stream-fusion-postgres
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  stremio-stream-fusion-postgres:
+    image: postgres
+    container_name: stremio-stream-fusion-postgres
+    restart: always
+    environment:
+      PGDATA: /var/lib/postgresql/data/
+      POSTGRES_USER: stremio
+      POSTGRES_PASSWORD: SRWNsafYXtBQJLsunk2gba6cLfTTixgGpMVCu
+      POSTGRES_DB: stremio-zilean
+    volumes:
+      - /home/aerya/docker/stremio/stremio-stream-fusion-postgres:/var/lib/postgresql/data/
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  stremio-stream-fusion-jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: stremio-stream-fusion-jackett
+    environment:
+      PUID: 0
+      PGID: 0
+      TZ: Europe/Paris
+    volumes:
+      - /home/aerya/docker/stremio/stremio-stream-fusion-jackett:/config
+    restart: always
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

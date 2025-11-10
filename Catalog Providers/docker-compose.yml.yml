@@ -1,0 +1,77 @@
+services:
+  stremio-catalog-providers:
+    image: reddravenn/stremio-catalog-providers
+    container_name: stremio-catalog-providers
+    restart: always
+    ports:
+      - 32850:7000
+    environment:
+      PORT: 7000
+      BASE_URL: https://stremio-catalogues.xxx.xxx
+      DB_USER: stremio
+      DB_HOST: stremio-catalog-providers-postgres
+      DB_NAME: stremio_catalog_db
+      DB_PASSWORD: SRWNsafYXtBQJLsunk2gba6cLfTTixgGpMVCu
+      DB_PORT: 5432
+      DB_MAX_CONNECTIONS: 20
+      DB_IDLE_TIMEOUT: 30000
+      DB_CONNECTION_TIMEOUT: 2000
+      REDIS_HOST: stremio-catalog-providers-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: Q3Knq4SfXrFNnuthnZSNRrKzzcL2Kq2ecHMyK
+      TRAKT_CLIENT_ID: xxx
+      TRAKT_CLIENT_SECRET: xxx
+      TRAKT_HISTORY_FETCH_INTERVAL: 1d
+      CACHE_CATALOG_CONTENT_DURATION_DAYS: 1
+      CACHE_POSTER_CONTENT_DURATION_DAYS: 7
+      LOG_LEVEL: debug
+      LOG_INTERVAL_DELETION: 3w
+      NODE_ENV: production
+    volumes:
+      - /home/aerya/docker/stremio/stremio-catalog-providers/db:/usr/src/app/db
+      - /home/aerya/docker/stremio/stremio-catalog-providers/log:/usr/src/app/log
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    depends_on:
+      stremio-catalog-providers-postgres:
+        condition: service_healthy
+      stremio-catalog-providers-redis:
+        condition: service_healthy
+  stremio-catalog-providers-postgres:
+    image: postgres
+    container_name: stremio-catalog-providers-postgres
+    environment:
+      POSTGRES_USER: stremio
+      POSTGRES_PASSWORD: SRWNsafYXtBQJLsunk2gba6cLfTTixgGpMVCu
+      POSTGRES_DB: stremio_catalog_db
+    volumes:
+      - /home/aerya/docker/stremio/stremio-catalog-providers-postgres:/var/lib/postgresql/
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U stremio -d stremio_catalog_db
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  stremio-catalog-providers-redis:
+    image: redis
+    container_name: stremio-catalog-providers-redis
+    restart: always
+    command: >
+      sh -c "redis-server --requirepass 'Q3Knq4SfXrFNnuthnZSNRrKzzcL2Kq2ecHMyK'
+      --appendonly yes"
+    volumes:
+      - /home/aerya/docker/stremio/stremio-catalog-providers-redis:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

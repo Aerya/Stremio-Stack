@@ -1,0 +1,55 @@
+services:
+  stremio-aiometadata:
+    image: ghcr.io/cedya77/aiometadata:latest
+    container_name: stremio-aiometadata
+    restart: always
+    ports:
+      - 32857:3232
+    environment:
+      PORT: 3232
+      TMDB_API: xxx
+      TVDB_API_KEY: xxx
+      FANART_API_KEY: xxx
+      MDBLIST_API_KEY: xxx
+      RPDB_API_KEY: xxx
+      HOST_NAME: https://stremio-aiometadata.xxx.xxx
+      REDIS_URL: redis://stremio-aiometadata-redis:6379
+      META_TTL: 604800
+      ENABLE_CACHE_WARMING: true
+      CACHE_WARMUP_MODE: essential
+      CATALOG_WARMUP_MAX_PAGES_PER_CATALOG: 100
+      TMDB_POPULAR_WARMING_ENABLED: true
+      CACHE_WARM_INTERVAL_HOURS: 24
+      MAL_WARMUP_ENABLED: true
+      MAL_WARMUP_INTERVAL_HOURS: 6
+      CATALOG_TTL: 86400
+      CATALOG_LIST_ITEMS_SIZE: 30
+      LOG_LEVEL: debug
+      ADDON_PASSWORD: bNmmGNsrw6xHxvN6N9RF6mau2N72YpJsquzeT
+      ADMIN_KEY: YLgLE244NgPxSU7AgE9Qq5aMPZiRaNVYZGqeN
+      DATABASE_URI: sqlite://addon/data/db.sqlite
+    volumes:
+      - /home/aerya/docker/stremio/stremio-aiometadata/data:/app/addon/data
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    depends_on:
+      stremio-aiometadata-redis:
+        condition: service_healthy
+    tty: true
+  stremio-aiometadata-redis:
+    image: redis:latest
+    container_name: stremio-aiometadata-redis
+    restart: always
+    volumes:
+      - /home/aerya/docker/stremio/stremio-aiometadata-redis/cache:/data
+    command: redis-server --appendonly yes --save 60 1
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

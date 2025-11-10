@@ -1,0 +1,28 @@
+services:
+  stremio-addon-manager:
+    image: ghcr.io/aerya/stremio-addon-manager:latest
+    container_name: stremio-addon-manager
+    restart: always
+    ports:
+      - 32856:80
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    depends_on:
+      - stremio-addon-manager-redis
+  stremio-addon-manager-redis:
+    image: redis
+    container_name: stremio-addon-manager-redis
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - /home/aerya/docker/stremio/stremio-addon-manager-redis:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

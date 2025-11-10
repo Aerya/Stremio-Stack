@@ -1,0 +1,16 @@
+services:
+  watchtower:
+    container_name: watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    environment:
+      - WATCHTOWER_NOTIFICATION_REPORT=true
+      - WATCHTOWER_NOTIFICATION_URL=discord://xxx
+    image: containrrr/watchtower
+    command: --label-enable --cleanup --schedule "0 0 4 * * *" --include-restarting
+      --include-stopped --notifications-hostname "StreamBox"
+networks: {}

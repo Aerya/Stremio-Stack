@@ -1,0 +1,35 @@
+services:
+  stremio-ratings-aggregator:
+    image: ghcr.io/aerya/rating-aggregator:latest
+    container_name: stremio-ratings-aggregator
+    restart: always
+    ports:
+      - 32860:61262
+    environment:
+      NODE_ENV: production
+      PORT: 61262
+      TMDB_API_KEY: xxx
+      CACHE_TTL_SECONDS: 86400
+      REDIS_URL: redis://:Q3Knq4SfXrFNnuthnZSNRrKzzcL2Kq2ecHMyK@stremio-ratings-aggregato-redis:6379
+      LOG_LEVEL: debug
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  stremio-ratings-aggregato-redis:
+    image: redis
+    container_name: stremio-ratings-aggregato-redis
+    restart: always
+    command: >
+      sh -c "redis-server --requirepass 'Q3Knq4SfXrFNnuthnZSNRrKzzcL2Kq2ecHMyK'
+      --appendonly yes"
+    volumes:
+      - /home/aerya/docker/stremio/stremio-ratings-aggregator-redis:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

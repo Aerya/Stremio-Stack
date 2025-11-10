@@ -1,0 +1,40 @@
+services:
+  stremio-saga-addon:
+    image: ghcr.io/aerya/stremio-saga-addon:latest
+    container_name: stremio-saga-addon
+    restart: always
+    ports:
+      - 32851:7000
+    environment:
+      PORT: 7000
+      RATE_LIMIT_ENABLED: true
+      LOG_ENABLED: true
+      LOG_LEVEL: debug
+      NODE_ENV: production
+      LOG_INTERVAL_DELETION: 3d
+      REDIS_HOST: stremio-saga-addon-redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: Q3Knq4SfXrFNnuthnZSNRrKzzcL2Kq2ecHMyK
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    depends_on:
+      stremio-saga-addon-redis:
+        condition: service_healthy
+  stremio-saga-addon-redis:
+    image: redis
+    container_name: stremio-saga-addon-redis
+    restart: always
+    command: >
+      sh -c "redis-server --requirepass 'Q3Knq4SfXrFNnuthnZSNRrKzzcL2Kq2ecHMyK'
+      --appendonly yes"
+    volumes:
+      - /home/aerya/docker/stremio/stremio-saga-addon-redis:/data
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    labels:

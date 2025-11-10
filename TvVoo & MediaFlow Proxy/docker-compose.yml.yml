@@ -1,0 +1,23 @@
+services:
+  stremio-tvvoo:
+    image: ghcr.io/qwertyuiop8899/tvvoo:latest
+    container_name: stremio-tvvoo
+    restart: always
+    ports:
+      - 32858:3000
+    volumes:
+      # Créer le fichier en amont avec "touch /home/aerya/docker/stremio-tvvoo/vavoo_catalog_cache.json"
+      - /home/aerya/docker/stremio/stremio-tvvoo/vavoo_catalog_cache.json:/app/dist/vavoo_catalog_cache.json
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  stremio-mediaflow-proxy:
+    image: ghcr.io/aerya/mediaflow-proxy:latest
+    container_name: stremio-mediaflow-proxy
+    restart: always
+    ports:
+      - 32859:8888
+    environment:
+      API_PASSWORD: aerya
+      FORWARDED_ALLOW_IPS: "*"
+    labels:
+      - com.centurylinklabs.watchtower.enable=true

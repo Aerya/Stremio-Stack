@@ -1,0 +1,30 @@
+services:
+  stremio-more-like-this:
+    image: ghcr.io/aerya/more-like-this:latest
+    container_name: stremio-more-like-this
+    restart: always
+    ports:
+      - 32863:8080
+    environment:
+      ENCRYPTION_KEY: 30e15aef1f37c8db41d32823d5084bde7b137b39e609d1d59ba4b5a8c96ab1f1 # générer avec openssl rand -hex 32
+      CACHE_TTL: 86400
+      GEMINI_MAX_RESULT: 20
+      REDIS_URL: redis://:Q3Knq4SfXrFNnuthnZSNRrKzzcL2Kq2ecHMyK@stremio-more-like-this-redis:6379/0
+      REDIS_HOST: stremio-more-like-this-redis
+      REDIS_PORT: 6379
+      REDIS_DB: morelikethis
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+    depends_on:
+      - stremio-more-like-this-redis
+  stremio-more-like-this-redis:
+    image: redis
+    container_name: stremio-more-like-this-redis
+    restart: always
+    command: >
+      sh -c "redis-server --requirepass 'Q3Knq4SfXrFNnuthnZSNRrKzzcL2Kq2ecHMyK'
+      --appendonly yes"
+    volumes:
+      - /home/aerya/docker/stremio/stremio-more-like-this-redis:/data
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
