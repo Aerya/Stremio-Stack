@@ -20,7 +20,7 @@ Les fichiers `.yml` sont considérés comme immuables :
 
 
 ## Article de blog lié
-[Stremio : ma stack du moment (auto-hébergée) et liste d'addons VoD/IPTV](URL_DE_L'ARTICLE)  
+[Stremio : ma stack du moment (auto-hébergée) et liste d'addons VoD/IPTV](https://upandclear.org/2025/11/10/stremio-ma-stack-du-moment-auto-hebergee-et-liste-daddons-vod-iptv/)  
 Des **visuels** pour chaque addon sont disponibles dans les dossiers.
 
 
