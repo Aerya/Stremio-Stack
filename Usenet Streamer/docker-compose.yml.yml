@@ -1,0 +1,36 @@
+services:
+  stremio-usenetstreamer:
+    container_name: stremio-usenetstreamer
+    restart: always
+    ports:
+      - 32867:7000
+    environment:
+      INDEXER_MANAGER: nzbhydra
+      INDEXER_MANAGER_URL: http://192.168.0.163:5076/
+    # INDEXER_MANAGER_API_KEY: your-prowlarr-api-key
+    # INDEXER_MANAGER_INDEXERS: -1
+      ADDON_SHARED_SECRET: blahbluhbloh # Juste un truc à mettre entre https://stremio-usenetstreamer.xxx.xxx/..../manifest.json
+      NZBDAV_URL: http://192.168.0.163:3029
+      NZBDAV_API_KEY: xxx
+      NZBDAV_WEBDAV_URL: http://192.168.0.163:3029
+      NZBDAV_WEBDAV_USER: xxx
+      NZBDAV_WEBDAV_PASS: xxx
+      NZBDAV_CATEGORY: Stremio
+      ADDON_BASE_URL: https://stremio-usenetstreamer.xxx.xxx
+    image: ghcr.io/sanket9225/usenetstreamer:latest
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
+  nzbhydra2:
+    image: lscr.io/linuxserver/nzbhydra2:dev
+    container_name: nzbhydra2
+    restart: always
+    # Passe par un VPN pour aller interroger les indexeurs
+    network_mode: container:gluetun-airvpn
+    environment:
+      TZ: Europe/Paris
+      PUID: 0
+      PGID: 0
+    volumes:
+      - /home/aerya/docker/nzbhydra2/data:/config
+    labels:
+      - com.centurylinklabs.watchtower.enable=true
