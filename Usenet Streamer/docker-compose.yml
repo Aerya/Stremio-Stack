@@ -1,25 +1,42 @@
+#Commenter ou décommenter (le #) la version que vous souhaitez (les 2 fonctionnelles à cet instant)
+
 services:
+# version stable, qui se configure via les variables dans le docker-compose
+
+  #stremio-usenetstreamer:
+  # container_name: stremio-usenetstreamer
+  # restart: always
+  # ports:
+  #   - 32867:7000
+  # environment:
+  #   INDEXER_MANAGER: nzbhydra
+  #   INDEXER_MANAGER_URL: http://192.168.0.163:5076
+  #   INDEXER_MANAGER_API_KEY: NBFQU9ECCN9PIBE6ES00HI1901
+  #   INDEXER_MANAGER_INDEXERS: UNFR
+  #   ADDON_SHARED_SECRET: blahbluhbloh # Juste un truc à mettre entre https://stremio-usenetstreamer.xxx.xxx/..../manifest.json
+  #   NZBDAV_URL: http://192.168.0.163:3029
+  #   NZBDAV_API_KEY: 8bc33968842a4257891521d29ba0fb36
+  #   NZBDAV_WEBDAV_URL: http://192.168.0.163:3029
+  #   NZBDAV_WEBDAV_USER: xxx
+  #   NZBDAV_WEBDAV_PASS: xxx
+  #   NZBDAV_CATEGORY: Stremio
+  #   ADDON_BASE_URL: https://stremio-usenetstreamer.xxx.xxx
+  # image: ghcr.io/sanket9225/usenetstreamer:latest
+  # labels:
+  #   - com.centurylinklabs.watchtower.enable=true
+
+# version en développement qui se configure via la WebUI. Pour l'instant ne fonctionne pas avec NZBhydra.
   stremio-usenetstreamer:
     container_name: stremio-usenetstreamer
     restart: always
     ports:
       - 32867:7000
     environment:
-      INDEXER_MANAGER: nzbhydra
-      INDEXER_MANAGER_URL: http://192.168.0.163:5076/
-    # INDEXER_MANAGER_API_KEY: your-prowlarr-api-key
-    # INDEXER_MANAGER_INDEXERS: -1
       ADDON_SHARED_SECRET: blahbluhbloh # Juste un truc à mettre entre https://stremio-usenetstreamer.xxx.xxx/..../manifest.json
-      NZBDAV_URL: http://192.168.0.163:3029
-      NZBDAV_API_KEY: xxx
-      NZBDAV_WEBDAV_URL: http://192.168.0.163:3029
-      NZBDAV_WEBDAV_USER: xxx
-      NZBDAV_WEBDAV_PASS: xxx
-      NZBDAV_CATEGORY: Stremio
-      ADDON_BASE_URL: https://stremio-usenetstreamer.xxx.xxx
-    image: ghcr.io/sanket9225/usenetstreamer:latest
+    image: ghcr.io/sanket9225/usenetstreamer:dev
     labels:
       - com.centurylinklabs.watchtower.enable=true
+
   nzbhydra2:
     image: lscr.io/linuxserver/nzbhydra2:dev
     container_name: nzbhydra2
@@ -34,3 +51,4 @@ services:
       - /home/aerya/docker/nzbhydra2/data:/config
     labels:
       - com.centurylinklabs.watchtower.enable=true
+networks: {}
