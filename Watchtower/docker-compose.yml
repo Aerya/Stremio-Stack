@@ -10,7 +10,7 @@ services:
     environment:
       - WATCHTOWER_NOTIFICATION_REPORT=true
       - WATCHTOWER_NOTIFICATION_URL=discord://xxx
-    image: containrrr/watchtower
+    image: ghcr.io/nicholas-fedor/watchtower:latest-dev
     command: --label-enable --cleanup --schedule "0 0 4 * * *" --include-restarting
       --include-stopped --notifications-hostname "StreamBox"
 networks: {}
