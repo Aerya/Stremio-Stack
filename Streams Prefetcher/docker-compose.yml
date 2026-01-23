@@ -1,6 +1,6 @@
 services:
   stremio-streams-prefetcher:
-    image: ghcr.io/deejay189393/streams-prefetcher:latest
+    image: registry.gitlab.com/deejay189393/streams-prefetcher:latest
     container_name: stremio-streams-prefetcher
     restart: always
     ports:
